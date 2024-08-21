@@ -1,17 +1,18 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import {
   getAccount,
   handleCancelation,
   handleFollow,
   handleUnfollow,
 } from "../../../helpers/api";
-import { IAccount } from "../../../helpers/types";
+import { IAccount, IContext } from "../../../helpers/types";
 import { BASE, DEF } from "../../../helpers/default";
 import { Gallery } from "../../../components/Gallery";
 export const Account = () => {
   const { id } = useParams();
   const [user, setUser] = useState<IAccount | null>(null);
+  const { account } = useOutletContext<IContext>();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -80,6 +81,25 @@ export const Account = () => {
     }
   };
 
+  const updatePost = (id: number) => {
+    if (user) {
+      setUser({
+        ...user,
+        posts: user.posts.map(post => {
+          if (post.id == id) {
+            post.isLiked = !post.isLiked;
+            if (!post.isLiked) {
+              post.likes = post.likes.filter(x => x.id != account.id);
+            } else {
+              post.likes.push(account);
+            }
+          }
+          return post;
+        })
+      })
+    }
+  }
+
   return (
     user && (
       <div className="container mt-5 mb-5">
@@ -138,7 +158,7 @@ export const Account = () => {
             </div>
           </div>
         </div>
-        {user.isPrivate == 0 && <Gallery posts={user.posts} />}
+        {<Gallery  onUpdate={updatePost} posts={user.posts ? user.posts : []} />}
       </div>
     )
   );

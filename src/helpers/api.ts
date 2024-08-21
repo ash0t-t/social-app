@@ -110,3 +110,18 @@ export const getAllFollowings = async (): Promise<IResponse> => {
   const response = await Axios.get('/following');
   return response.data;
 };
+
+export const handlePostReaction = async (id: number): Promise<IResponse> => {
+  const response = await Axios.post('/posts/react/' + id);
+  return response.data;
+};
+
+export const getPost = async (id: number): Promise<IResponse> => {
+  const response = await Axios.get('/posts/' + id);
+  return response.data;
+};
+
+export const handleComment = async (id: number, payload: {text: string}): Promise<IResponse> => {
+  const response = await Axios.post('/posts/comment/' + id, payload);
+  return response.data;
+};
